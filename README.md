@@ -1,35 +1,42 @@
-# Honoka（AI 全栈）
+# Honoka（AI 全栈 → 可扩展示例后台）
 
-> 灵感来自简历项目 **Rome 保险营销平台** 的竖切：**保险产品知识 / 营销话术助手**。  
-> **不是**完整营销中台（不做租户权限全量、批改、对账、uni-app 全套）。
+> **阶段 A（约 1 个月）**：文档 + 流式问答（带引用）+ 可评测 —— AI 全栈作品。  
+> **阶段 B（不限时）**：鉴权权限、前端示例、DB → 定时 → 缓存/队列；并含 **微前端了解 + 可选主子应用 demo**（见 ROADMAP §B4）。
 
-## 产品范围（Must）
+计划详见 [`ROADMAP.md`](./ROADMAP.md)；目录见 [`STRUCTURE.md`](./STRUCTURE.md)。  
+协作约定（**关键逻辑自己写**，Agent 搭框架/写重复代码）：[`AGENTS.md`](./AGENTS.md)。  
+R1 练习步骤：[`docs/R1练习-自己写.md`](./docs/R1练习-自己写.md)。
 
-1. 极简后台：产品列表（mock）+ 文档上传/管理  
-2. 问答：流式回答 + **引用文档片段**  
-3. 服务端：会话、检索、密钥不进前端  
-4. 5～10 条黄金问可回归（`npm test` / `npm run ai:eval`）  
-5. README + 2 分钟演示稿  
+## 阶段 A · Must
+
+1. 文档上传/管理  
+2. 流式回答 + **引用片段**  
+3. 密钥只在服务端  
+4. 黄金问 / 单测可回归  
+5. 2 分钟演示说明  
 
 ## 技术选型（初定）
 
 | 层 | 选型 |
 |----|------|
 | 前端 | Vue3 + Vite + TypeScript + Element Plus |
-| 后端 | Node（Express/Fastify）或后续可换 |
-| AI | OpenAI 兼容 API（可本地 Ollama）；RAG 先关键词/向量二选一做透 |
+| 后端 | Node（Express/Fastify）；Agent/RAG 放在 `apps/api` |
+| AI | OpenAI 兼容 API（可本机 Ollama） |
 
-## 计划
-
-见根目录 [`ROADMAP.md`](./ROADMAP.md)（节奏：**一天一刀**）。
-
-## 本地启动（脚手架就绪后）
+## 本地启动（R0）
 
 ```bash
-# 待 Week R0 脚手架落地后补充
+# 终端 1
+npm run dev:api
+
+# 终端 2
+npm run dev:web
 ```
+
+- Web：http://localhost:5173（先登录，mock：`admin` / `admin123`）  
+- API：http://127.0.0.1:8788/health（前端经 `/api` 代理）  
+- 前端工程对照 jiayou：`request` / Pinia / `permission` / Admin 布局（顶栏·侧栏·Tags）
 
 ## 安全
 
-- 模型 Key 只放 `.env`（已 gitignore），示例见 `.env.example`  
-- 勿提交客户真实保单/条款原文；演示用自造样例文档  
+- Key 只放 `.env`；演示用 `data/samples/` 自造内容，勿提交敏感原文。  

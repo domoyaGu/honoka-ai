@@ -1,0 +1,17 @@
+{
+  "name": "honoka",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Honoka AI fullstack",
+  "scripts": {
+    "dev": "npm run dev --workspace @honoka/web",
+    "dev:web": "npm run dev --workspace @honoka/web",
+    "dev:api": "npm run dev --workspace @honoka/api",
+    "build": "npm run build --workspace @honoka/web",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ]
+}
