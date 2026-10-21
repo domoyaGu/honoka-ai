@@ -57,18 +57,35 @@ export interface DocItem {
 }
 
 docsRouter.get("/", async (_req, res) => {
+  // try {
+  //   // 【你来写】读 UPLOADS_DIR，拼 DocItem[]，ok(res, items)
+  //   // 提示：fs.readdir + fs.stat；跳过 .gitkeep
+  //   fs.readdir(UPLOADS_DIR).then(files => {
+  //   void fs;
+  //   void path;
+  //   void UPLOADS_DIR;
+  //   return fail(res, "TODO: 实现文档列表 GET /docs", 501);
+  // } catch (e) {
+  //   return fail(res, e instanceof Error ? e.message : "列表失败", 500);
+  // }
   try {
-    // 【你来写】读 UPLOADS_DIR，拼 DocItem[]，ok(res, items)
-    // 提示：fs.readdir + fs.stat；跳过 .gitkeep
-    void fs;
-    void path;
-    void UPLOADS_DIR;
-    return fail(res, "TODO: 实现文档列表 GET /docs", 501);
+    fs.readdir(UPLOADS_DIR).then(files => {
+      const items = files.map(async file => {
+        if (file === ".gitkeep") return null;
+        const stats = await fs.stat(path.join(UPLOADS_DIR, file));
+        return {
+          id: file,
+          name: file,
+          size: stats.size,
+          uploadedAt: stats.mtime.toISOString(),
+        };
+      });
+      return ok(res, items);
+    })
   } catch (e) {
     return fail(res, e instanceof Error ? e.message : "列表失败", 500);
   }
 });
-
 docsRouter.post("/upload", (req, res) => {
   upload.single("file")(req, res, async (err) => {
     if (err) {

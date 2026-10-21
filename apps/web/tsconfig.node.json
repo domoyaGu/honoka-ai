@@ -1,19 +1,33 @@
+/**
+ * Node 侧 TS 配置：只管 Vite 配置文件本身（vite.config.ts）
+ *
+ * 和 tsconfig.app.json 拆开的原因：
+ * - app：浏览器环境（DOM、Vue）
+ * - node：跑在 Node 里的构建脚本，需要 "types": ["node"]（如 node:url）
+ *
+ * 根 tsconfig.json 用 project references 把两者拼起来。
+ * 对照：Vite 官方脚手架的 tsconfig.node.json
+ */
 {
   "compilerOptions": {
+    // 增量编译缓存；放 node_modules/.tmp 避免污染源码树
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2023",
     "lib": ["ES2023"],
     "module": "ESNext",
     "skipLibCheck": true,
+    // bundler：按 Vite/打包器规则解析，不必写出 .js 扩展名
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    // 只做类型检查，不产出 js（真正跑的是 Vite）
     "noEmit": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    // 让 import from "node:url" 等有类型；不要和 app 的 DOM types 混在一起
     "types": ["node"]
   },
   "include": ["vite.config.ts"]

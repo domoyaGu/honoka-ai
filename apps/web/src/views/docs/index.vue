@@ -21,7 +21,8 @@ async function refresh() {
   loading.value = true;
   try {
     // 【你来写】list.value = await listDocs()
-    void listDocs;
+    list.value = await listDocs();
+    // void listDocs;
     ElMessage.info("TODO: 实现 refresh → listDocs()");
   } catch {
     /* request 已 toast */
