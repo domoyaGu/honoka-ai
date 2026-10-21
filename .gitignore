@@ -1,0 +1,36 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+dist-ssr/
+*.local
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# logs / cache
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vite/
+coverage/
+.turbo/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# OS
+desktop.ini
+
+# local data (uploads / vector index — keep samples only)
+data/uploads/*
+!data/uploads/.gitkeep
+data/index/*
+!data/index/.gitkeep
