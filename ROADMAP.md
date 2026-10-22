@@ -141,5 +141,6 @@ honoka/
 | 2026-10-21 | R0.2～0.3 | `apps/web` 侧栏壳；`apps/api` `/health`；Vite 代理 `/api`；根脚本 `dev:web` / `dev:api` |
 | 2026-10-21 | R0 加厚 | 对照 jiayou：AutoImport/Components、axios、Pinia、permission、登录、Admin 顶栏/侧栏/Tags |
 | 2026-10-21 | R1 | 文档/流式：**框架保留**，关键逻辑改为 TODO 自学（见 `docs/R1练习-自己写.md`） |
+| 2026-10-22 | R1 进度 | **已完成**：`GET /docs`（await + Promise.all + 去时间戳名）；前端 `refresh` / 上传·删除接线。**未完成**：后端 upload/delete 仍 501；Mock SSE 全链路；可选 raw |
 
-**当前**：按 `docs/R1练习-自己写.md` 自己补 R1；完成后再开 **R2**（切片 + 检索 + Prompt）。
+**当前**：继续补 R1——先打通后端 `POST /docs/upload` + `DELETE /docs/:id`，再写 Mock 流式；全部勾完再开 **R2**。

@@ -69,19 +69,21 @@ docsRouter.get("/", async (_req, res) => {
   //   return fail(res, e instanceof Error ? e.message : "列表失败", 500);
   // }
   try {
-    fs.readdir(UPLOADS_DIR).then(files => {
-      const items = files.map(async file => {
-        if (file === ".gitkeep") return null;
-        const stats = await fs.stat(path.join(UPLOADS_DIR, file));
-        return {
-          id: file,
-          name: file,
-          size: stats.size,
-          uploadedAt: stats.mtime.toISOString(),
-        };
-      });
-      return ok(res, items);
-    })
+    const files = await fs.readdir(UPLOADS_DIR);
+    const items = await Promise.all(
+      files
+        .filter((file) => file !== ".gitkeep")
+        .map(async (file) => {
+          const stats = await fs.stat(path.join(UPLOADS_DIR, file));
+          return {
+            id: file,
+            name: file.replace(/^\d+-/, ""),
+            size: stats.size,
+            uploadedAt: stats.mtime.toISOString(),
+          };
+        }),
+    );
+    return ok(res, items);
   } catch (e) {
     return fail(res, e instanceof Error ? e.message : "列表失败", 500);
   }

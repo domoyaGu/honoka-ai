@@ -22,8 +22,6 @@ async function refresh() {
   try {
     // 【你来写】list.value = await listDocs()
     list.value = await listDocs();
-    // void listDocs;
-    ElMessage.info("TODO: 实现 refresh → listDocs()");
   } catch {
     /* request 已 toast */
   } finally {
@@ -34,18 +32,27 @@ async function refresh() {
 async function onFileChange(file: { raw?: File }) {
   const raw = file.raw;
   if (!raw) return;
-  // 【你来写】校验 .md/.txt → uploadDoc(raw) → refresh()
-  void uploadDoc;
-  void uploading;
-  ElMessage.info("TODO: 实现上传 onFileChange");
+  uploading.value = true;
+  try {
+    await uploadDoc(raw);
+    await refresh();
+  } catch (error) {
+    ElMessage.error(error.message);
+  } finally {
+    uploading.value = false;
+  }
 }
 
 async function onRemove(row: DocItem) {
   // 【你来写】ElMessageBox.confirm → deleteDoc(row.id) → refresh()
-  void deleteDoc;
-  void ElMessageBox;
-  void row;
-  ElMessage.info("TODO: 实现删除 onRemove");
+  ElMessageBox.confirm("确定删除该文件吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    await deleteDoc(row.id);
+    await refresh();
+  });
 }
 
 function formatSize(n: number) {
