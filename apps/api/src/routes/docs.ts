@@ -93,18 +93,29 @@ docsRouter.post("/upload", (req, res) => {
     if (err) {
       return fail(res, err.message || "上传失败");
     }
-    // 【你来写】校验 req.file，组装 DocItem，ok(res, item, "上传成功")
-    void req.file;
-    void ok;
-    return fail(res, "TODO: 实现上传成功响应", 501);
+    // 校验 req.file；name 与列表一致（去掉时间戳前缀）
+    if (!req.file) {
+      return fail(res, "文件不存在");
+    }
+    const item: DocItem = {
+      id: req.file.filename,
+      name: req.file.filename.replace(/^\d+-/, ""),
+      size: req.file.size,
+      uploadedAt: new Date().toISOString(),
+    };
+    return ok(res, item, "上传成功");
   });
 });
 
 docsRouter.delete("/:id", async (req, res) => {
   try {
-    // 【你来写】basename 防穿越 → unlink → ok(res, true)
-    void req.params.id;
-    return fail(res, "TODO: 实现删除 DELETE /docs/:id", 501);
+    // basename 防 ../ 穿越；禁止删仓库占位文件 .gitkeep
+    const id = path.basename(req.params.id).trim();
+    if (!id || id === ".gitkeep") {
+      return fail(res, "禁止删除该文件");
+    }
+    await fs.unlink(path.join(UPLOADS_DIR, id));
+    return ok(res, true, "删除成功");
   } catch (e) {
     return fail(res, e instanceof Error ? e.message : "删除失败", 404);
   }
@@ -112,9 +123,13 @@ docsRouter.delete("/:id", async (req, res) => {
 
 docsRouter.get("/:id/raw", async (req, res) => {
   try {
-    // 【你来写·可选】读文件 utf8，ok(res, { id, text })
-    void req.params.id;
-    return fail(res, "TODO: 可选实现 GET /docs/:id/raw", 501);
+    // 读 utf8，供预览 / 后续 RAG；同样防穿越，不读 .gitkeep
+    const id = path.basename(req.params.id).trim();
+    if (!id || id === ".gitkeep") {
+      return fail(res, "文件不存在", 404);
+    }
+    const text = await fs.readFile(path.join(UPLOADS_DIR, id), "utf8");
+    return ok(res, { id, text });
   } catch (e) {
     return fail(res, e instanceof Error ? e.message : "读取失败", 404);
   }

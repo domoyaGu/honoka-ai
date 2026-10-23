@@ -32,27 +32,39 @@ async function refresh() {
 async function onFileChange(file: { raw?: File }) {
   const raw = file.raw;
   if (!raw) return;
+  // 前端先拦一层扩展名，坏文件不必打到后端
+  const ext = raw.name.slice(raw.name.lastIndexOf(".")).toLowerCase();
+  if (ext !== ".md" && ext !== ".txt") {
+    ElMessage.warning("仅支持 .md / .txt");
+    return;
+  }
   uploading.value = true;
   try {
     await uploadDoc(raw);
     await refresh();
   } catch (error) {
-    ElMessage.error(error.message);
+    ElMessage.error(error instanceof Error ? error.message : "上传失败");
   } finally {
     uploading.value = false;
   }
 }
 
 async function onRemove(row: DocItem) {
-  // 【你来写】ElMessageBox.confirm → deleteDoc(row.id) → refresh()
-  ElMessageBox.confirm("确定删除该文件吗？", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  }).then(async () => {
+  try {
+    await ElMessageBox.confirm("确定删除该文件吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch {
+    return; // 用户点取消
+  }
+  try {
     await deleteDoc(row.id);
     await refresh();
-  });
+  } catch {
+    /* request 已 toast */
+  }
 }
 
 function formatSize(n: number) {
