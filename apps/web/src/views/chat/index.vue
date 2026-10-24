@@ -36,17 +36,31 @@ async function onSend() {
   // 3. abort = new AbortController(); streaming = true
   // 4. await streamMockReply(prompt, { signal, onChunk: 追加到 assistant.content })
   // 5. finally 里 streaming = false
-  void streamMockReply;
-  void prompt;
-  void scrollBottom;
-  void abort;
-  ElMessage.info("TODO: 实现 onSend（见 docs/R1练习-自己写.md）");
+  pushUserMessage(prompt)
+  pushAssistantMessage()
+  abort = new AbortController();
+  streaming.value = true;
+  await streamMockReply(prompt, {
+    signal: abort.signal, onChunk: (chunk) => {
+      pushAssistantMessage(chunk)
+    }
+  })
+    .finally(() => {
+      streaming.value = false;
+    })
 }
 
 function onStop() {
-  // 【你来写】abort?.abort()
-  ElMessage.info("TODO: 实现 onStop → abort()");
+  if (abort) abort.abort();
 }
+
+function pushUserMessage(prompt: string) {
+  messages.value.push({ id: Date.now().toString(), role: "user", content: prompt })
+}
+function pushAssistantMessage(content: string) {
+  messages.value.push({ id: Date.now().toString(), role: "assistant", content })
+}
+
 </script>
 
 <template>
@@ -59,30 +73,16 @@ function onStop() {
     </template>
 
     <div ref="listRef" class="msg-list">
-      <div
-        v-for="m in messages"
-        :key="m.id"
-        class="msg"
-        :class="m.role"
-      >
+      <div v-for="m in messages" :key="m.id" class="msg" :class="m.role">
         <div class="role">{{ m.role === "user" ? "我" : "助手" }}</div>
         <div class="bubble">{{ m.content || "…" }}</div>
       </div>
-      <el-empty
-        v-if="!messages.length"
-        description="实现 onSend + SSE 后在这里看流式输出"
-      />
+      <el-empty v-if="!messages.length" description="实现 onSend + SSE 后在这里看流式输出" />
     </div>
 
     <div class="composer">
-      <el-input
-        v-model="input"
-        type="textarea"
-        :rows="3"
-        placeholder="输入问题，Enter 发送（Shift+Enter 换行）"
-        :disabled="streaming"
-        @keydown.enter.exact.prevent="onSend"
-      />
+      <el-input v-model="input" type="textarea" :rows="3" placeholder="输入问题，Enter 发送（Shift+Enter 换行）"
+        :disabled="streaming" @keydown.enter.exact.prevent="onSend" />
       <div class="actions">
         <el-button v-if="streaming" type="warning" @click="onStop">停止</el-button>
         <el-button type="primary" :loading="streaming" @click="onSend">
@@ -98,6 +98,7 @@ function onStop() {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 160px);
+
   :deep(.el-card__body) {
     flex: 1;
     display: flex;
@@ -105,11 +106,13 @@ function onStop() {
     gap: 12px;
   }
 }
+
 .head {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .msg-list {
   flex: 1;
   overflow: auto;
@@ -118,22 +121,27 @@ function onStop() {
   border-radius: 8px;
   min-height: 280px;
 }
+
 .msg {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
+
   &.user {
     flex-direction: row-reverse;
+
     .bubble {
       background: #2563eb;
       color: #fff;
     }
   }
+
   &.assistant .bubble {
     background: #fff;
     border: 1px solid #e5e7eb;
   }
 }
+
 .role {
   font-size: 12px;
   color: #6b7280;
@@ -141,6 +149,7 @@ function onStop() {
   flex-shrink: 0;
   padding-top: 8px;
 }
+
 .bubble {
   max-width: 70%;
   padding: 10px 12px;
@@ -149,11 +158,13 @@ function onStop() {
   line-height: 1.5;
   font-size: 14px;
 }
+
 .composer {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .actions {
   display: flex;
   justify-content: flex-end;

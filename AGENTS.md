@@ -28,6 +28,7 @@
 - **微前端**（qiankun/MF 等）只在 **阶段 B · B7/MF***；勿把 AI 主路径拆成多子应用。  
 - 密钥只进 `.env`；**禁止** `VITE_` 暴露模型 Key。  
 - 演示文档用 `data/samples/` 自造内容；勿提交真实客户/敏感原文。  
+- 后端推荐 `apps/api-java`（Spring Boot）；`apps/api`（Node）保留对照。二者勿同时占 `API_PORT`。选型见 `docs/后端Java选型.md`。  
 
 ## 注释约定（必须遵守）
 

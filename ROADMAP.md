@@ -25,7 +25,7 @@
 
 | Must | Won’t（阶段 A 内） |
 |------|---------------------|
-| `apps/web` + `apps/api` 跑通 | 完整用户/角色/菜单/部门/字典… |
+| `apps/web` + 后端（`api-java` 或 `api`）跑通 | 完整用户/角色/菜单/部门/字典… |
 | 文档库 + RAG（关键词即可，向量可选） | 表单构建 / 代码生成 / 监控全家桶 |
 | OpenAI 兼容或 Ollama 流式 | 真 MQ 集群、完整定时平台 |
 | 会话或简单限流（其一）+ 评测 | 四层菜单、报表大全、uni-app |
@@ -121,10 +121,11 @@ Week 4  会话或限流 + 评测 + README / 简历条目
 ```
 honoka/
   apps/web/       # 前端主应用 / 微前端基座（A 脚手架；B 权限+可选加载子应用）
-  apps/api/       # API + agent/rag（A 核心；B 加任务/队列）
+  apps/api-java/  # Spring Boot API（A 推荐；B 接 Security/JPA/任务）
+  apps/api/       # Node API（对照 / 回滚）
   apps/sub-demo/  # （B·MF3 可选）微前端子应用示例，阶段 A 不建
   data/samples|uploads|index/
-  docs/           # 含微前端了解笔记（B）
+  docs/           # 含微前端了解、后端Java选型
   fixtures/
 ```
 
@@ -142,5 +143,6 @@ honoka/
 | 2026-10-21 | R0 加厚 | 对照 jiayou：AutoImport/Components、axios、Pinia、permission、登录、Admin 顶栏/侧栏/Tags |
 | 2026-10-21 | R1 | 文档/流式：**框架保留**，关键逻辑改为 TODO 自学（见 `docs/R1练习-自己写.md`） |
 | 2026-10-22 | R1 进度 | **已完成**：`GET /docs`（await + Promise.all + 去时间戳名）；前端 `refresh` / 上传·删除接线。**未完成**：后端 upload/delete 仍 501；Mock SSE 全链路；可选 raw |
+| 2026-10-24 | 后端并行 | 新增 `apps/api-java`（Spring Boot 3）：health / docs / mock-stream；说明见 `docs/后端Java选型.md`；Node `apps/api` 保留对照 |
 
-**当前**：继续补 R1——先打通后端 `POST /docs/upload` + `DELETE /docs/:id`，再写 Mock 流式；全部勾完再开 **R2**。
+**当前**：安装 JDK 17+ 后用 `npm run dev:api-java` 跑 Java 后端；前端 Mock 流式接线仍按 R1 §6 自测；勾完再开 **R2**。

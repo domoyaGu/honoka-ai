@@ -20,14 +20,17 @@ R1 练习步骤：[`docs/R1练习-自己写.md`](./docs/R1练习-自己写.md)�
 | 层 | 选型 |
 |----|------|
 | 前端 | Vue3 + Vite + TypeScript + Element Plus |
-| 后端 | Node（Express/Fastify）；Agent/RAG 放在 `apps/api` |
+| 后端 | **Spring Boot 3**（`apps/api-java`，推荐）；Node Express（`apps/api`）保留对照 |
 | AI | OpenAI 兼容 API（可本机 Ollama） |
+
+Java 为何选 Boot、与其它框架对比：[`docs/后端Java选型.md`](./docs/后端Java选型.md)。
 
 ## 本地启动（R0）
 
 ```bash
-# 终端 1
-npm run dev:api
+# 终端 1 —— 二选一（不要同时占 8788）
+npm run dev:api-java   # 需 JDK 17+ 与 Maven
+# npm run dev:api      # Node 对照
 
 # 终端 2
 npm run dev:web

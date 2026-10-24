@@ -28,11 +28,23 @@ chatRouter.post("/mock-stream", async (req, res) => {
   // 3) setInterval：每次 res.write(`data: ${JSON.stringify({ type:"chunk", text: piece })}\n\n`)
   // 4) 结束：write type:"done"，res.end()，clearInterval
   // 5) req.on("close", () => clearInterval(...))
-  void prompt;
-  void res;
-  return fail(
-    res,
-    "TODO: 实现 Mock SSE（见 docs/R1练习-自己写.md §5）",
-    501,
-  );
+  const full = `prompt: ${prompt}`;
+  res.setHeader("Content-Type", "text/event-stream; charset=utf-8")
+  res.setHeader("Cache-Control", "no-cache, no-transform")
+  res.setHeader("Connection", "keep-alive")
+  res.setHeader("X-Accel-Buffering", "no")
+  res.flushHeaders?.()
+  req.on("close", () => clearInterval(interval))
+  let i = 0;
+  let interval: ReturnType<typeof setInterval>
+  interval = setInterval(() => {
+    if (i < full.length) {
+      const piece = full[i++];
+      res.write(`data: ${JSON.stringify({ type: "chunk", text: piece })}\n\n`)
+      return
+    }
+    clearInterval(interval)
+    res.write(`data: ${JSON.stringify({ type: "done", text: full })}\n\n`)
+    res.end()
+  }, 50)
 });
