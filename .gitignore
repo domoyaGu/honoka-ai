@@ -7,6 +7,9 @@ dist/
 dist-ssr/
 *.local
 apps/api-java/target/
+apps/py-labs/.venv/
+__pycache__/
+*.pyc
 
 # env & secrets
 .env
@@ -26,6 +29,9 @@ coverage/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Windows junction → blog/（本机 Cursor 发现技能用，勿提交）
+.cursor/skills/stage-blog-publish/
 
 # OS
 desktop.ini

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "q1",
+    "question": "Honoka 的后端推荐用哪个？端口是多少？",
+    "expect_keywords": ["api-java", "8788", "Spring"],
+    "notes": "应命中 fullstack-kb / 选型相关切片"
+  },
+  {
+    "id": "q2",
+    "question": "文档上传的表单字段名是什么？支持哪些扩展名？",
+    "expect_keywords": ["file", ".md", ".txt"],
+    "notes": "RAG / Agent 均应能引用"
+  },
+  {
+    "id": "q3",
+    "question": "Mock SSE 的 chunk 和 done 分别表示什么？",
+    "expect_keywords": ["chunk", "done"],
+    "notes": "流式协议"
+  },
+  {
+    "id": "q4",
+    "question": "完全无关的天马行空问题应如何表现？",
+    "expect_keywords": ["资料不足"],
+    "notes": "空命中降级；勿幻觉"
+  }
+]

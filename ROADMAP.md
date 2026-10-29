@@ -248,9 +248,10 @@ Honoka 继续作为可运行系统，按依赖推进即可（无时间点）：
 | `docs/后端Java选型.md` | 已有：后端选型 |
 | `docs/backend-ladder.md` | 建议：§二.B 后端知识地图展开（库 / 鉴权 / 缓存 / 队列 / API / 可观测）与本仓落地对照 |
 | `docs/llm-basics.md` | 模型 API、流式、参数、结构化输出 |
-| `docs/rag.md` | 切片/检索/引用/评测；可链异步索引 |
+| `docs/rag.md` | 切片 / 混合检索 / 引用 |
 | `docs/agent-playbook.md` | 场景决策清单 + 本仓 Agent 用法 |
 | `docs/finetune-notes.md` | 微调实验记录与结论 |
+| `docs/job-gap-checklist.md` | 苏州岗位缺口 ↔ 本仓补齐 |
 | `docs/微前端了解.md` | 可选；与 AI 主路径解耦 |
 
 样例数据：`data/samples/`；评测：`fixtures/`；运行时上传与索引：`data/uploads`、`data/index`。
@@ -269,8 +270,10 @@ Honoka 继续作为可运行系统，按依赖推进即可（无时间点）：
 
 ## 八、现状快照
 
-- 全栈壳、文档库、Mock SSE 已可演示；后端推荐 `apps/api-java`。  
-- **已落地（关键词 RAG）**：切片 → `data/index` → Top-K 检索 → Prompt 拼装 → `/chat/rag-mock-stream` + 前端引用片段；说明见 `docs/rag.md`。  
-- 下一优先：真模型流式 + 引用忠实 → `fixtures` 评测集 → Agent 工具化检索；后端加深按 §二.B 与 AI 路径穿插，先 `docs/backend-ladder.md` 再薄示例。  
-- 按需：微调实验。  
-- 详细目录与模块职责：`STRUCTURE.md`。
+- 全栈壳、文档库、Mock/RAG/Agent SSE 可演示；后端推荐 `apps/api-java`。  
+- **RAG**：混合检索（keyword / 本地伪向量 / hybrid）+ 引用；见 `docs/rag.md`。  
+- **Agent**：工具白名单 + `/chat/agent-mock-stream`；Python lab 见 `apps/py-labs/`。  
+- **知识文档**：`backend-ladder` / `llm-basics` / `agent-playbook` / `finetune-notes` / `job-gap-checklist` 已齐。  
+- **评测**：`fixtures/golden-questions.json`。  
+- 仍待：真模型流式、真 Embedding+Milvus、仓外 LoRA 实跑、后端 DB/MQ 薄落地。  
+- 目录：`STRUCTURE.md`。

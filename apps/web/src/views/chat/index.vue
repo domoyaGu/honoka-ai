@@ -1,14 +1,15 @@
 <script setup lang="ts">
 /**
- * AI 对话页 —— Mock / RAG-Mock 流式
+ * AI 对话页 —— Mock / RAG / Agent 流式
  *
- * 数据流：输入 → AbortController → streamMockReply(rag|mock)
- *   → meta.citations 展示引用 → onChunk 追加同一条 assistant → 停止 abort
+ * 数据流：输入 → AbortController → streamMockReply
+ *   → tool 步骤（Agent）→ meta.citations → onChunk 追加 → 停止 abort
  */
-import { nextTick, ref } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { ElMessage } from "element-plus";
 import {
   streamMockReply,
+  type AgentToolStep,
   type Citation,
   type StreamMode,
 } from "@/composables/useMockChatStream";
@@ -18,6 +19,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   citations?: Citation[];
+  toolSteps?: AgentToolStep[];
 }
 
 const input = ref("");
@@ -45,14 +47,16 @@ async function onSend() {
   messages.value.push({ id: newId(), role: "user", content: prompt });
   input.value = "";
 
-  // 先放一条空助手气泡，后续 chunk 只改这一条（不要每个字 push 新消息）
-  const assistant: ChatMessage = {
+  // 先放空助手气泡；后续必须改 messages 里的响应式项
+  // （勿改 push 前的裸对象，否则 Vue 不刷新，看起来像「一次性全出来」）
+  messages.value.push({
     id: newId(),
     role: "assistant",
     content: "",
     citations: [],
-  };
-  messages.value.push(assistant);
+    toolSteps: [],
+  });
+  const assistantIdx = messages.value.length - 1;
   scrollBottom();
 
   abort = new AbortController();
@@ -64,28 +68,45 @@ async function onSend() {
       {
         signal: abort.signal,
         onChunk: (piece) => {
-          assistant.content += piece;
+          const msg = messages.value[assistantIdx];
+          if (!msg) return;
+          msg.content += piece;
           scrollBottom();
         },
         onCitations: (citations) => {
-          assistant.citations = citations;
+          const msg = messages.value[assistantIdx];
+          if (!msg) return;
+          msg.citations = citations;
+          scrollBottom();
+        },
+        onToolStep: (step) => {
+          const msg = messages.value[assistantIdx];
+          if (!msg) return;
+          const list = msg.toolSteps ? [...msg.toolSteps] : [];
+          // 避免 done 里重复 steps 时刷两遍
+          if (list.some((s) => s.tool === step.tool && JSON.stringify(s.args) === JSON.stringify(step.args))) {
+            return;
+          }
+          list.push(step);
+          msg.toolSteps = list;
           scrollBottom();
         },
       },
       mode.value,
     );
   } catch (e) {
+    const msg = messages.value[assistantIdx];
     // 用户点停止会 abort，不算错误提示
     if (e instanceof DOMException && e.name === "AbortError") {
-      if (!assistant.content) {
-        assistant.content = "（已停止）";
+      if (msg && !msg.content) {
+        msg.content = "（已停止）";
       }
       return;
     }
-    const msg = e instanceof Error ? e.message : "流式请求失败";
-    ElMessage.error(msg);
-    if (!assistant.content) {
-      assistant.content = `错误：${msg}`;
+    const errText = e instanceof Error ? e.message : "流式请求失败";
+    ElMessage.error(errText);
+    if (msg && !msg.content) {
+      msg.content = `错误：${errText}`;
     }
   } finally {
     streaming.value = false;
@@ -96,16 +117,21 @@ async function onSend() {
 function onStop() {
   abort?.abort();
 }
+
+const modeLabel = computed(() =>
+  mode.value === "agent" ? "Agent Mock" : mode.value === "rag" ? "RAG Mock" : "纯 Mock",
+);
 </script>
 
 <template>
   <el-card shadow="never" class="chat-card">
     <template #header>
       <div class="head">
-        <span>AI 对话 · {{ mode === "rag" ? "RAG Mock" : "纯 Mock" }}</span>
+        <span>AI 对话 · {{ modeLabel }}</span>
         <el-tag size="small" type="success">SSE</el-tag>
         <el-radio-group v-model="mode" size="small" :disabled="streaming">
           <el-radio-button value="rag">RAG</el-radio-button>
+          <el-radio-button value="agent">Agent</el-radio-button>
           <el-radio-button value="mock">Mock</el-radio-button>
         </el-radio-group>
       </div>
@@ -120,6 +146,20 @@ function onStop() {
       >
         <div class="role">{{ m.role === "user" ? "我" : "助手" }}</div>
         <div class="bubble-wrap">
+          <div
+            v-if="m.role === 'assistant' && m.toolSteps?.length"
+            class="tool-steps"
+          >
+            <div class="citations-title">工具调用</div>
+            <div
+              v-for="(s, si) in m.toolSteps"
+              :key="`${s.tool}-${si}`"
+              class="tool-step"
+            >
+              <code>{{ s.tool }}</code>
+              <span class="tool-args">{{ JSON.stringify(s.args) }}</span>
+            </div>
+          </div>
           <div class="bubble">{{ m.content || "…" }}</div>
           <div
             v-if="m.role === 'assistant' && m.citations?.length"
@@ -235,6 +275,29 @@ function onStop() {
   white-space: pre-wrap;
   line-height: 1.5;
   font-size: 14px;
+}
+
+.tool-steps {
+  padding: 8px 10px;
+  background: #eef2ff;
+  border-radius: 8px;
+  border: 1px solid #c7d2fe;
+  font-size: 12px;
+  color: #3730a3;
+}
+
+.tool-step {
+  margin-bottom: 4px;
+
+  code {
+    font-weight: 600;
+    margin-right: 6px;
+  }
+}
+
+.tool-args {
+  color: #6366f1;
+  word-break: break-all;
 }
 
 .citations {

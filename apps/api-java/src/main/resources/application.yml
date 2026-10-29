@@ -20,6 +20,9 @@ honoka:
   rag-chunk-size: ${HONOKA_RAG_CHUNK_SIZE:500}
   rag-chunk-overlap: ${HONOKA_RAG_CHUNK_OVERLAP:60}
   rag-top-k: ${HONOKA_RAG_TOP_K:4}
+  # keyword | vector | hybrid（本地 n-gram 伪向量，见 HybridRetriever）
+  rag-mode: ${HONOKA_RAG_MODE:hybrid}
+  rag-vector-weight: ${HONOKA_RAG_VECTOR_WEIGHT:0.45}
 
 logging:
   level:

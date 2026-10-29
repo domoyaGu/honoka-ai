@@ -1,10 +1,7 @@
 /**
- * 消费后端 Mock / RAG-Mock SSE
+ * 消费后端 Mock / RAG / Agent SSE
  *
- * 对接：`/chat/mock-stream` 或 `/chat/rag-mock-stream`
- * 事件：`data: {"type":"meta"|"chunk"|"done", ...}\n\n`
- * meta / done 可带 citations，供对话页展示引用片段
- * Abort：传入 signal，断开后 reader.read 抛 AbortError，后端停推
+ * 事件：`data: {"type":"tool"|"meta"|"chunk"|"done", ...}\n\n`
  */
 import { getToken } from "@/composables/auth";
 
@@ -17,25 +14,31 @@ export interface Citation {
   score: number;
 }
 
+export interface AgentToolStep {
+  tool: string;
+  args: unknown;
+  result: unknown;
+}
+
 export interface StreamHandlers {
-  /** 每个 chunk 的增量文本 */
   onChunk: (text: string) => void;
-  /** 收到引用元数据（通常在首包 meta，或 done 兜底） */
   onCitations?: (citations: Citation[]) => void;
-  /** 收到 done 时的全文（可选） */
+  /** Agent：每完成一次工具调用推一条 */
+  onToolStep?: (step: AgentToolStep) => void;
   onDone?: (full: string) => void;
-  /** 点「停止」时传入 AbortController.signal */
   signal?: AbortSignal;
 }
 
 interface SsePayload {
-  type: "meta" | "chunk" | "done";
+  type: "tool" | "meta" | "chunk" | "done";
   text?: string;
   citations?: Citation[];
   promptChars?: number;
+  step?: AgentToolStep;
+  steps?: AgentToolStep[];
 }
 
-export type StreamMode = "mock" | "rag";
+export type StreamMode = "mock" | "rag" | "agent";
 
 export async function streamMockReply(
   prompt: string,
@@ -43,7 +46,11 @@ export async function streamMockReply(
   mode: StreamMode = "rag",
 ): Promise<string> {
   const path =
-    mode === "rag" ? "/api/chat/rag-mock-stream" : "/api/chat/mock-stream";
+    mode === "agent"
+      ? "/api/chat/agent-mock-stream"
+      : mode === "rag"
+        ? "/api/chat/rag-mock-stream"
+        : "/api/chat/mock-stream";
   const res = await fetch(path, {
     method: "POST",
     headers: {
@@ -62,7 +69,6 @@ export async function streamMockReply(
     throw new Error("响应无 body，无法流式读取");
   }
 
-  // 空 prompt 等业务失败时，后端可能返回 JSON 包装而非 SSE
   const contentType = res.headers.get("content-type") || "";
   if (contentType.includes("application/json")) {
     const json = (await res.json()) as { code?: number; message?: string };
@@ -71,7 +77,6 @@ export async function streamMockReply(
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  // 半包缓冲：一次 read 可能拆开一条 SSE，或粘多条
   let buffer = "";
   let full = "";
 
@@ -81,14 +86,12 @@ export async function streamMockReply(
 
     buffer += decoder.decode(value, { stream: true });
     const parts = buffer.split("\n\n");
-    // 最后一段可能不完整，留在 buffer 等下次
     buffer = parts.pop() ?? "";
 
     for (const part of parts) {
       const line = part.trim();
       if (!line.startsWith("data:")) continue;
 
-      // 兼容 `data:{...}` 与 `data: {...}`
       const raw = line.slice(5).trim();
       if (!raw || raw === "[DONE]") continue;
 
@@ -99,7 +102,9 @@ export async function streamMockReply(
         continue;
       }
 
-      if (payload.type === "meta" && payload.citations) {
+      if (payload.type === "tool" && payload.step) {
+        handlers.onToolStep?.(payload.step);
+      } else if (payload.type === "meta" && payload.citations) {
         handlers.onCitations?.(payload.citations);
       } else if (payload.type === "chunk" && payload.text) {
         full += payload.text;
@@ -109,6 +114,11 @@ export async function streamMockReply(
         full = finalText;
         if (payload.citations) {
           handlers.onCitations?.(payload.citations);
+        }
+        if (payload.steps) {
+          for (const s of payload.steps) {
+            handlers.onToolStep?.(s);
+          }
         }
         handlers.onDone?.(finalText);
         return finalText;

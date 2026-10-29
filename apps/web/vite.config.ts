@@ -45,11 +45,23 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       open: true,
       proxy: {
-        // 浏览器只打同源 /api/*，由此转发到 Express，避免 CORS
+        // 浏览器只打同源 /api/*，由此转发到后端，避免 CORS
         "/api": {
           target: `http://127.0.0.1:${apiPort}`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
+          // SSE：避免代理把 event-stream 整段缓冲后再吐给浏览器
+          configure: (proxy) => {
+            proxy.on("proxyRes", (proxyRes, _req, res) => {
+              const ct = String(proxyRes.headers["content-type"] || "");
+              if (ct.includes("text/event-stream")) {
+                res.setHeader("Cache-Control", "no-cache, no-transform");
+                res.setHeader("X-Accel-Buffering", "no");
+                // 关掉可能存在的压缩，压缩层常会攒包
+                delete proxyRes.headers["content-encoding"];
+              }
+            });
+          },
         },
       },
     },

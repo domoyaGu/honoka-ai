@@ -33,21 +33,27 @@ public class RagController {
 
   @GetMapping("/stats")
   public ApiResponse<Map<String, Object>> stats() {
-    return ApiResponse.ok(Map.of("chunkCount", indexService.size()));
+    return ApiResponse.ok(
+        Map.of(
+            "chunkCount", indexService.size(),
+            "retrieveMode", indexService.defaultRetrieveMode()));
   }
 
-  /** 调试：看某查询的 Top-K 命中（不走 SSE） */
+  /** 调试：看某查询的 Top-K 命中（不走 SSE）；mode=keyword|vector|hybrid */
   @GetMapping("/search")
   public ApiResponse<Map<String, Object>> search(
-      @RequestParam("q") String q, @RequestParam(value = "k", required = false) Integer k) {
+      @RequestParam("q") String q,
+      @RequestParam(value = "k", required = false) Integer k,
+      @RequestParam(value = "mode", required = false) String mode) {
     String query = q == null ? "" : q.trim();
     if (query.isEmpty()) {
       return ApiResponse.fail("请提供查询参数 q");
     }
-    List<KeywordRetriever.ScoredChunk> hits = indexService.retrieve(query, k);
+    List<KeywordRetriever.ScoredChunk> hits = indexService.retrieve(query, k, mode);
     List<Citation> citations = RagPromptBuilder.toCitations(hits);
     Map<String, Object> data = new LinkedHashMap<>();
     data.put("query", query);
+    data.put("mode", mode == null || mode.isBlank() ? indexService.defaultRetrieveMode() : mode);
     data.put("citations", citations);
     data.put("promptPreview", RagPromptBuilder.buildPrompt(query, hits));
     return ApiResponse.ok(data);

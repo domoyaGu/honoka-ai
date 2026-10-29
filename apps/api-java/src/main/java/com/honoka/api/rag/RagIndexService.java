@@ -36,9 +36,11 @@ public class RagIndexService {
   private final Path uploadsDir;
   private final Path indexDir;
   private final TextChunker chunker;
-  private final KeywordRetriever retriever = new KeywordRetriever();
+  private final HybridRetriever retriever = new HybridRetriever();
   private final ObjectMapper mapper;
   private final int defaultTopK;
+  private final String defaultMode;
+  private final double vectorWeight;
 
   /** 线程安全可读快照；重建时整体替换 */
   private final CopyOnWriteArrayList<ChunkRecord> chunks = new CopyOnWriteArrayList<>();
@@ -49,6 +51,8 @@ public class RagIndexService {
     this.indexDir = Paths.get(props.getIndexDir()).toAbsolutePath().normalize();
     this.chunker = new TextChunker(props.getRagChunkSize(), props.getRagChunkOverlap());
     this.defaultTopK = props.getRagTopK();
+    this.defaultMode = props.getRagMode() == null ? "hybrid" : props.getRagMode();
+    this.vectorWeight = props.getRagVectorWeight();
     this.mapper = mapper;
   }
 
@@ -87,8 +91,17 @@ public class RagIndexService {
   }
 
   public List<KeywordRetriever.ScoredChunk> retrieve(String query, Integer topK) {
+    return retrieve(query, topK, null);
+  }
+
+  public List<KeywordRetriever.ScoredChunk> retrieve(String query, Integer topK, String mode) {
     int k = topK == null || topK < 1 ? defaultTopK : topK;
-    return retriever.retrieve(chunks, query, k);
+    String m = mode == null || mode.isBlank() ? defaultMode : mode;
+    return retriever.retrieve(chunks, query, k, m, vectorWeight);
+  }
+
+  public String defaultRetrieveMode() {
+    return defaultMode;
   }
 
   private boolean loadCache() {

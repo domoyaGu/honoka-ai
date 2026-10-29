@@ -27,7 +27,8 @@
 - 演示文档用 `data/samples/` 自造内容；勿提交真实客户/敏感原文。  
 - 后端推荐 `apps/api-java`；`apps/api` 对照。二者勿同时占 `API_PORT`。  
 - 勿把 AI 对话 / RAG 拆成多个微前端子应用。  
-- 微调须授权语料；无评测不上复杂自治 Agent。
+- 微调须授权语料；无评测不上复杂自治 Agent。  
+- 阶段复盘发文见 `blog/SKILL.md`；发布 Cookie 只放 `blog/.env`，勿提交。
 
 ## 注释约定
 

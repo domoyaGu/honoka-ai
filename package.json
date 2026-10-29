@@ -8,6 +8,7 @@
     "dev:web": "npm run dev --workspace @honoka/web",
     "dev:api": "npm run dev --workspace @honoka/api",
     "dev:api-java": "mvn -f apps/api-java/pom.xml spring-boot:run",
+    "lab:py": "python apps/py-labs/agent_rag_lab.py",
     "build": "npm run build --workspace @honoka/web",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

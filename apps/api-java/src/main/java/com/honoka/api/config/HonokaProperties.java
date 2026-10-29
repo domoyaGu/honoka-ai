@@ -28,6 +28,12 @@ public class HonokaProperties {
   /** 默认 Top-K */
   private int ragTopK = 4;
 
+  /** 检索模式：keyword | vector | hybrid */
+  private String ragMode = "hybrid";
+
+  /** hybrid 时向量权重 0～1 */
+  private double ragVectorWeight = 0.45;
+
   public String getUploadsDir() {
     return uploadsDir;
   }
@@ -74,5 +80,21 @@ public class HonokaProperties {
 
   public void setRagTopK(int ragTopK) {
     this.ragTopK = ragTopK;
+  }
+
+  public String getRagMode() {
+    return ragMode;
+  }
+
+  public void setRagMode(String ragMode) {
+    this.ragMode = ragMode;
+  }
+
+  public double getRagVectorWeight() {
+    return ragVectorWeight;
+  }
+
+  public void setRagVectorWeight(double ragVectorWeight) {
+    this.ragVectorWeight = ragVectorWeight;
   }
 }

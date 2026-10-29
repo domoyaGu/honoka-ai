@@ -1,0 +1,411 @@
+/*
+  博客园后台 → 设置 → 页面定制 →「页面定制 CSS」粘贴本文件全文
+  目标：有氛围的背景 + 正文白纸轻边框；少碎线
+*/
+
+:root {
+  --hk-bg: #e8eef2;
+  --hk-paper: #fffcfa;
+  --hk-ink: #1a2332;
+  --hk-muted: #5c6b7a;
+  --hk-line: #d5dee6;
+  --hk-line-soft: #e6edf2;
+  --hk-accent: #0e7490;
+  --hk-accent-soft: #ecfeff;
+  --hk-radius: 8px;
+  --hk-font: "IBM Plex Sans", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --hk-display: "IBM Plex Serif", "Source Han Serif SC", "Noto Serif SC", serif;
+  --hk-page: 1320px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--hk-font) !important;
+  color: var(--hk-ink) !important;
+  background-color: var(--hk-bg) !important;
+  /* 底色洗染 + 细点阵，让正文白纸浮出来 */
+  background-image:
+    radial-gradient(ellipse 90% 55% at 12% -8%, rgba(14, 116, 144, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 96% 4%, rgba(100, 116, 139, 0.12), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(14, 116, 144, 0.06), transparent 60%),
+    radial-gradient(rgba(26, 35, 50, 0.045) 1px, transparent 1px) !important;
+  background-size: auto, auto, auto, 18px 18px !important;
+  background-attachment: fixed !important;
+}
+
+#home,
+#header,
+#footer {
+  background: transparent !important;
+}
+
+/* —— 页首 —— */
+.honoka-banner {
+  border-bottom: 1px solid rgba(213, 222, 230, 0.8);
+  background: rgba(255, 252, 250, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.honoka-banner__inner {
+  max-width: var(--hk-page);
+  margin: 0 auto;
+  padding: 1rem 1.5rem 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.25rem;
+}
+
+.honoka-banner__brand {
+  font-family: var(--hk-display);
+  font-size: 1.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--hk-ink) !important;
+  text-decoration: none !important;
+  line-height: 1.1;
+}
+
+.honoka-banner__brand:hover {
+  color: var(--hk-accent) !important;
+}
+
+.honoka-banner__tag {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--hk-muted);
+  letter-spacing: 0.04em;
+}
+
+/* —— 页脚 —— */
+.honoka-footer {
+  margin-top: 1.5rem;
+  border-top: none;
+  background: transparent;
+}
+
+.honoka-footer__inner {
+  max-width: var(--hk-page);
+  margin: 0 auto;
+  padding: 1.1rem 1.5rem 1.6rem;
+  text-align: center;
+}
+
+.honoka-footer__line {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  color: var(--hk-muted);
+}
+
+.honoka-footer__links {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.honoka-footer__links a {
+  color: var(--hk-accent) !important;
+  text-decoration: none !important;
+}
+
+.honoka-footer__links a:hover {
+  text-decoration: underline !important;
+}
+
+.honoka-footer__links span {
+  margin: 0 0.45rem;
+  color: #c5d0d8;
+}
+
+/* —— 加宽整页 —— */
+#home {
+  width: auto !important;
+  max-width: var(--hk-page) !important;
+  margin: 0 auto !important;
+  padding: 0.75rem 1rem 2rem !important;
+}
+
+/* 正文：白纸 + 不明显边框 */
+#main {
+  width: 74% !important;
+  max-width: none !important;
+  margin-right: 1.5% !important;
+  box-sizing: border-box !important;
+  background: var(--hk-paper) !important;
+  border: 1px solid var(--hk-line) !important;
+  border-radius: var(--hk-radius) !important;
+  box-shadow: 0 1px 2px rgba(26, 35, 50, 0.04), 0 10px 28px rgba(26, 35, 50, 0.05) !important;
+  padding: 1.35rem 1.75rem 2rem !important;
+}
+
+#sideBar {
+  width: 24% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  background: rgba(255, 252, 250, 0.72) !important;
+  border: 1px solid var(--hk-line-soft) !important;
+  border-radius: var(--hk-radius) !important;
+  box-shadow: 0 1px 2px rgba(26, 35, 50, 0.03) !important;
+  padding: 0.85rem 1rem 1.25rem !important;
+  backdrop-filter: blur(8px);
+}
+
+#mainContent,
+#mainContent .forFlow {
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+@media (min-width: 1400px) {
+  :root {
+    --hk-page: 1440px;
+  }
+
+  #main {
+    width: 76% !important;
+    padding: 1.5rem 2rem 2.25rem !important;
+  }
+
+  #sideBar {
+    width: 22% !important;
+  }
+}
+
+/* 标题区 */
+#blogTitle h1 a,
+#blogTitle h2 {
+  font-family: var(--hk-display) !important;
+  color: var(--hk-ink) !important;
+}
+
+#navigator,
+#navList,
+#navList li {
+  border: none !important;
+  background: transparent !important;
+}
+
+#navList a {
+  color: var(--hk-muted) !important;
+}
+
+#navList a:hover {
+  color: var(--hk-accent) !important;
+}
+
+/* —— 去掉主栏卡片线框 —— */
+.day,
+.post,
+#topics,
+#topics .post,
+.forFlow .day,
+.forFlow .postTitle,
+.postTitle,
+.postCon,
+.postDesc,
+.postBody,
+.entrylistPosttitle,
+.entrylistItem,
+.entrylistPostSummary,
+.entrylistItemPostDesc {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.postTitle,
+.dayTitle,
+.entrylistPosttitle,
+#topics .postTitle {
+  font-family: var(--hk-display) !important;
+  font-weight: 600 !important;
+  padding: 0.4rem 0 0.2rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.postTitle a,
+.entrylistPosttitle a,
+#topics .postTitle a {
+  color: var(--hk-ink) !important;
+  text-decoration: none !important;
+}
+
+.postTitle a:hover,
+.entrylistPosttitle a:hover {
+  color: var(--hk-accent) !important;
+}
+
+.postDesc,
+.entrylistItemPostDesc {
+  color: var(--hk-muted) !important;
+  border-top: none !important;
+  padding-top: 0.35rem !important;
+}
+
+/* 列表篇与篇之间只用轻分隔，不要框 */
+.day + .day,
+.forFlow > .day {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hk-line) !important;
+}
+
+.postBody,
+#cnblogs_post_body {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--hk-ink);
+}
+
+#cnblogs_post_body h2,
+#cnblogs_post_body h3 {
+  font-family: var(--hk-display);
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-top: 1.6rem;
+}
+
+#cnblogs_post_body a {
+  color: var(--hk-accent);
+}
+
+#cnblogs_post_body blockquote {
+  margin: 1rem 0;
+  padding: 0.65rem 0.9rem;
+  border: none;
+  border-left: 3px solid var(--hk-accent);
+  background: var(--hk-accent-soft);
+  color: var(--hk-muted);
+  border-radius: 0 var(--hk-radius) var(--hk-radius) 0;
+}
+
+#cnblogs_post_body pre,
+.hljs,
+.cnblogs-markdown .hljs {
+  border-radius: var(--hk-radius) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#cnblogs_post_body code:not(.hljs) {
+  background: var(--hk-accent-soft);
+  color: #155e75;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+/* —— 侧栏内部：去掉碎框，外层已有整块纸 —— */
+#sideBarMain,
+.sidebar-block,
+#sidebar_news,
+#blog-calendar,
+#sidebar_search,
+#sidebar_postcategory,
+.catListPostCategory,
+.newsItem,
+.cal,
+#calendar,
+#widget_my_google,
+div.mySearch {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#sideBar {
+  font-size: 0.9rem;
+  color: var(--hk-muted);
+}
+
+#sideBar h3,
+.catListTitle,
+#sideBarMain h3 {
+  font-family: var(--hk-display) !important;
+  color: var(--hk-ink) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--hk-line) !important;
+  margin: 1.1rem 0 0.55rem !important;
+  padding: 0 0 0.35rem !important;
+  font-size: 0.95rem !important;
+}
+
+#sideBar a {
+  color: var(--hk-muted) !important;
+}
+
+#sideBar a:hover {
+  color: var(--hk-accent) !important;
+}
+
+/* 公告 */
+.honoka-notice {
+  margin: 0.15rem 0 0.5rem;
+  padding: 0.55rem 0 0.15rem;
+  background: transparent;
+  border: none;
+  border-left: 3px solid var(--hk-accent);
+  border-radius: 0;
+  padding-left: 0.75rem;
+  line-height: 1.55;
+}
+
+.honoka-notice__hello {
+  margin: 0 0 0.4rem;
+  font-size: 0.92rem;
+  color: var(--hk-ink);
+}
+
+.honoka-notice__desc {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  color: var(--hk-muted);
+}
+
+.honoka-notice__list {
+  margin: 0 0 0.55rem;
+  padding: 0;
+  list-style: none;
+}
+
+.honoka-notice__list li {
+  margin: 0.15rem 0;
+}
+
+.honoka-notice__list a {
+  color: var(--hk-accent) !important;
+  text-decoration: none !important;
+  font-size: 0.85rem;
+}
+
+.honoka-notice__list a:hover {
+  text-decoration: underline !important;
+}
+
+.honoka-notice__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--hk-muted);
+}
+
+/* 移动端 */
+@media (max-width: 900px) {
+  #main,
+  #sideBar {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .honoka-banner__brand {
+    font-size: 1.4rem;
+  }
+
+  .honoka-banner__inner,
+  .honoka-footer__inner {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

@@ -1,0 +1,21 @@
+<!-- 博客园后台 → 设置 → 页面定制 →「页脚 HTML」粘贴本文件全文 -->
+<footer id="honoka-footer" class="honoka-footer">
+  <div class="honoka-footer__inner">
+    <p class="honoka-footer__line">
+      © <span id="honoka-year"></span> Honoka · 学习向技术笔记
+    </p>
+    <p class="honoka-footer__links">
+      <a href="https://github.com/domoyaGu/honoka-ai" rel="noopener" target="_blank">GitHub</a>
+      <span aria-hidden="true">·</span>
+      <a href="https://juejin.cn/user/2274237504320120" rel="noopener" target="_blank">掘金</a>
+      <span aria-hidden="true">·</span>
+      <a href="#top">回到顶部</a>
+    </p>
+  </div>
+</footer>
+<script>
+  (function () {
+    var el = document.getElementById("honoka-year");
+    if (el) el.textContent = String(new Date().getFullYear());
+  })();
+</script>
