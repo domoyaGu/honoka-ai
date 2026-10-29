@@ -18,7 +18,7 @@ honoka/
 │   ├── 后端Java选型.md   # 已有
 │   ├── backend-ladder.md # 建议：库 / 鉴权 / 缓存 / 队列 / API / 可观测（对照 ROADMAP §二.B）
 │   ├── llm-basics.md     # 建议：模型 API / 流式 / 参数
-│   ├── rag.md            # 建议：切片检索引用评测
+│   ├── rag.md            # 切片 / 关键词检索 / 引用（已有）
 │   ├── agent-playbook.md # 建议：Agent 场景决策与用法
 │   ├── finetune-notes.md # 建议：微调实验结论
 │   └── 微前端了解.md     # 可选

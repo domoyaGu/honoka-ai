@@ -1,17 +1,27 @@
 /**
- * 消费后端 Mock SSE（阶段 A · R1）
+ * 消费后端 Mock / RAG-Mock SSE
  *
- * 对接：Node `/chat/mock-stream` 或 Java `ChatController`（SseEmitter）
- * 事件：`data: {"type":"chunk"|"done","text":"..."}\n\n`
- * Abort：传入 signal，断开后 reader.read 抛 AbortError，后端 onCompletion 停推
- *
- * 练习说明见：docs/R1练习-自己写.md §6
+ * 对接：`/chat/mock-stream` 或 `/chat/rag-mock-stream`
+ * 事件：`data: {"type":"meta"|"chunk"|"done", ...}\n\n`
+ * meta / done 可带 citations，供对话页展示引用片段
+ * Abort：传入 signal，断开后 reader.read 抛 AbortError，后端停推
  */
 import { getToken } from "@/composables/auth";
+
+export interface Citation {
+  chunkId: string;
+  docId: string;
+  docName: string;
+  source: string;
+  snippet: string;
+  score: number;
+}
 
 export interface StreamHandlers {
   /** 每个 chunk 的增量文本 */
   onChunk: (text: string) => void;
+  /** 收到引用元数据（通常在首包 meta，或 done 兜底） */
+  onCitations?: (citations: Citation[]) => void;
   /** 收到 done 时的全文（可选） */
   onDone?: (full: string) => void;
   /** 点「停止」时传入 AbortController.signal */
@@ -19,15 +29,22 @@ export interface StreamHandlers {
 }
 
 interface SsePayload {
-  type: "chunk" | "done";
-  text: string;
+  type: "meta" | "chunk" | "done";
+  text?: string;
+  citations?: Citation[];
+  promptChars?: number;
 }
+
+export type StreamMode = "mock" | "rag";
 
 export async function streamMockReply(
   prompt: string,
   handlers: StreamHandlers,
+  mode: StreamMode = "rag",
 ): Promise<string> {
-  const res = await fetch("/api/chat/mock-stream", {
+  const path =
+    mode === "rag" ? "/api/chat/rag-mock-stream" : "/api/chat/mock-stream";
+  const res = await fetch(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -82,12 +99,17 @@ export async function streamMockReply(
         continue;
       }
 
-      if (payload.type === "chunk" && payload.text) {
+      if (payload.type === "meta" && payload.citations) {
+        handlers.onCitations?.(payload.citations);
+      } else if (payload.type === "chunk" && payload.text) {
         full += payload.text;
         handlers.onChunk(payload.text);
       } else if (payload.type === "done") {
         const finalText = payload.text || full;
         full = finalText;
+        if (payload.citations) {
+          handlers.onCitations?.(payload.citations);
+        }
         handlers.onDone?.(finalText);
         return finalText;
       }

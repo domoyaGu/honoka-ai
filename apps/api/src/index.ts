@@ -2,8 +2,9 @@
  * Honoka API 入口（阶段 A）
  *
  * - /health
- * - /docs/*   文档上传列表删除（R1）
- * - /chat/*   Mock SSE 流式（R1）；真模型后续仍挂在本进程
+ * - /docs/*   文档上传列表删除
+ * - /chat/*   Mock SSE + RAG Mock SSE
+ * - /rag/*    重建索引 / 调试检索
  */
 import cors from "cors";
 import dotenv from "dotenv";
@@ -12,6 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chatRouter } from "./routes/chat.js";
 import { docsRouter } from "./routes/docs.js";
+import { ragRouter } from "./routes/rag.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -34,6 +36,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/docs", docsRouter);
 app.use("/chat", chatRouter);
+app.use("/rag", ragRouter);
 
 app.listen(port, () => {
   console.log(`[honoka-api] http://127.0.0.1:${port}`);

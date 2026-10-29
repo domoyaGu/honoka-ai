@@ -269,7 +269,8 @@ Honoka 继续作为可运行系统，按依赖推进即可（无时间点）：
 
 ## 八、现状快照
 
-- 全栈壳、文档库、Mock/真流式接线在演进中；后端推荐 `apps/api-java`。  
-- 优先：RAG 闭环与引用 → 评测集 → Agent 工具化检索；后端加深按 §二.B 与 AI 路径穿插，先 `docs/backend-ladder.md` 再薄示例。  
+- 全栈壳、文档库、Mock SSE 已可演示；后端推荐 `apps/api-java`。  
+- **已落地（关键词 RAG）**：切片 → `data/index` → Top-K 检索 → Prompt 拼装 → `/chat/rag-mock-stream` + 前端引用片段；说明见 `docs/rag.md`。  
+- 下一优先：真模型流式 + 引用忠实 → `fixtures` 评测集 → Agent 工具化检索；后端加深按 §二.B 与 AI 路径穿插，先 `docs/backend-ladder.md` 再薄示例。  
 - 按需：微调实验。  
 - 详细目录与模块职责：`STRUCTURE.md`。

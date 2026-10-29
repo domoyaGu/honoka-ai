@@ -1,22 +1,28 @@
 <script setup lang="ts">
 /**
- * AI 对话页 —— Mock 流式接线（阶段 A · R1）
+ * AI 对话页 —— Mock / RAG-Mock 流式
  *
- * 数据流：输入 → AbortController → streamMockReply → onChunk 追加同一条 assistant → 停止 abort
- * 说明：docs/R1练习-自己写.md §5～§6
+ * 数据流：输入 → AbortController → streamMockReply(rag|mock)
+ *   → meta.citations 展示引用 → onChunk 追加同一条 assistant → 停止 abort
  */
 import { nextTick, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { streamMockReply } from "@/composables/useMockChatStream";
+import {
+  streamMockReply,
+  type Citation,
+  type StreamMode,
+} from "@/composables/useMockChatStream";
 
 interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
+  citations?: Citation[];
 }
 
 const input = ref("");
 const streaming = ref(false);
+const mode = ref<StreamMode>("rag");
 const messages = ref<ChatMessage[]>([]);
 const listRef = ref<HTMLElement | null>(null);
 let abort: AbortController | null = null;
@@ -44,6 +50,7 @@ async function onSend() {
     id: newId(),
     role: "assistant",
     content: "",
+    citations: [],
   };
   messages.value.push(assistant);
   scrollBottom();
@@ -52,13 +59,21 @@ async function onSend() {
   streaming.value = true;
 
   try {
-    await streamMockReply(prompt, {
-      signal: abort.signal,
-      onChunk: (piece) => {
-        assistant.content += piece;
-        scrollBottom();
+    await streamMockReply(
+      prompt,
+      {
+        signal: abort.signal,
+        onChunk: (piece) => {
+          assistant.content += piece;
+          scrollBottom();
+        },
+        onCitations: (citations) => {
+          assistant.citations = citations;
+          scrollBottom();
+        },
       },
-    });
+      mode.value,
+    );
   } catch (e) {
     // 用户点停止会 abort，不算错误提示
     if (e instanceof DOMException && e.name === "AbortError") {
@@ -87,8 +102,12 @@ function onStop() {
   <el-card shadow="never" class="chat-card">
     <template #header>
       <div class="head">
-        <span>AI 对话 · Mock 流式</span>
-        <el-tag size="small" type="success">SSE 已接线</el-tag>
+        <span>AI 对话 · {{ mode === "rag" ? "RAG Mock" : "纯 Mock" }}</span>
+        <el-tag size="small" type="success">SSE</el-tag>
+        <el-radio-group v-model="mode" size="small" :disabled="streaming">
+          <el-radio-button value="rag">RAG</el-radio-button>
+          <el-radio-button value="mock">Mock</el-radio-button>
+        </el-radio-group>
       </div>
     </template>
 
@@ -100,11 +119,29 @@ function onStop() {
         :class="m.role"
       >
         <div class="role">{{ m.role === "user" ? "我" : "助手" }}</div>
-        <div class="bubble">{{ m.content || "…" }}</div>
+        <div class="bubble-wrap">
+          <div class="bubble">{{ m.content || "…" }}</div>
+          <div
+            v-if="m.role === 'assistant' && m.citations?.length"
+            class="citations"
+          >
+            <div class="citations-title">引用片段</div>
+            <div
+              v-for="(c, idx) in m.citations"
+              :key="c.chunkId"
+              class="citation"
+            >
+              <span class="cite-idx">[{{ idx + 1 }}]</span>
+              <span class="cite-doc">{{ c.docName }}</span>
+              <span class="cite-src">{{ c.source }}</span>
+              <p class="cite-snip">{{ c.snippet }}</p>
+            </div>
+          </div>
+        </div>
       </div>
       <el-empty
         v-if="!messages.length"
-        description="输入问题后看逐字流式输出；可点停止中断"
+        description="默认走 RAG：检索 samples/uploads 后流式回答并展示引用；可切回纯 Mock"
       />
     </div>
 
@@ -113,7 +150,7 @@ function onStop() {
         v-model="input"
         type="textarea"
         :rows="3"
-        placeholder="输入问题，Enter 发送（Shift+Enter 换行）；可试 samples/fullstack-kb.md §7"
+        placeholder="试问：Honoka 的后端推荐用哪个？端口是多少？"
         :disabled="streaming"
         @keydown.enter.exact.prevent="onSend"
       />
@@ -145,6 +182,7 @@ function onStop() {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .msg-list {
@@ -184,13 +222,63 @@ function onStop() {
   padding-top: 8px;
 }
 
-.bubble {
+.bubble-wrap {
   max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bubble {
   padding: 10px 12px;
   border-radius: 10px;
   white-space: pre-wrap;
   line-height: 1.5;
   font-size: 14px;
+}
+
+.citations {
+  padding: 8px 10px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
+  font-size: 12px;
+  color: #374151;
+}
+
+.citations-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+.citation {
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.cite-idx {
+  color: #2563eb;
+  margin-right: 4px;
+}
+
+.cite-doc {
+  font-weight: 500;
+  margin-right: 6px;
+}
+
+.cite-src {
+  color: #9ca3af;
+}
+
+.cite-snip {
+  margin: 4px 0 0;
+  line-height: 1.4;
+  color: #6b7280;
+  white-space: pre-wrap;
 }
 
 .composer {

@@ -13,8 +13,13 @@ spring:
 
 # 数据目录：相对「启动时的工作目录」。请在 apps/api-java 下执行 mvn spring-boot:run
 honoka:
-  # 仓库根下的 data/uploads（与 Node 版共用同一目录）
+  # 仓库根下的 data/*（与 Node 版共用同一目录）
   uploads-dir: ${HONOKA_UPLOADS_DIR:../../data/uploads}
+  samples-dir: ${HONOKA_SAMPLES_DIR:../../data/samples}
+  index-dir: ${HONOKA_INDEX_DIR:../../data/index}
+  rag-chunk-size: ${HONOKA_RAG_CHUNK_SIZE:500}
+  rag-chunk-overlap: ${HONOKA_RAG_CHUNK_OVERLAP:60}
+  rag-top-k: ${HONOKA_RAG_TOP_K:4}
 
 logging:
   level:

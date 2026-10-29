@@ -69,16 +69,17 @@ apps/api-java/
     config/          # CORS、路径配置
     health/
     docs/            # 文档库（后续可抽 storage 接口 → OSS/DB）
-    chat/            # SSE（后续接 OpenAI 兼容客户端）
+    chat/            # SSE（Mock / RAG-Mock；后续接 OpenAI 兼容客户端）
+    rag/             # 切片 / 关键词检索 / Prompt（见 docs/rag.md）
   src/main/resources/application.yml
 ```
 
 后续可加模块而不推翻：
 
-1. `security` — Spring Security + JWT（B1）  
+1. `security` — Spring Security + JWT  
 2. `persistence` — Spring Data JPA（用户/会话）  
-3. `rag` — 切片/检索服务，被 `chat` 调用  
-4. `job` — `@Scheduled` 或队列消费者（B4/B5）  
+3. `rag` — 已有关键词版；可演进向量 / 异步建索引  
+4. `job` — `@Scheduled` 或队列消费者  
 
 ---
 
