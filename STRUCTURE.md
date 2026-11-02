@@ -21,7 +21,8 @@ honoka/
 │   ├── rag.md
 │   ├── agent-playbook.md
 │   ├── finetune-notes.md
-│   └── job-gap-checklist.md   # 岗位缺口对照
+│   ├── job-gap-checklist.md   # 岗位缺口对照
+│   └── career-plan.md         # 角色阶梯 / 学习主线 / 苏州投递 ROI
 ├── fixtures/
 │   └── golden-questions.json
 ├── blog/                 # 阶段复盘写稿 + 掘金/博客园本机发布脚本（.env 勿提交）
