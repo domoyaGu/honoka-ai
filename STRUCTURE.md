@@ -1,6 +1,6 @@
 # 目录说明
 
-本仓服务三条主线（见 `ROADMAP.md`）：**全栈底座 + 后端工程加深**、**大模型应用开发**、**Agent 使用与微调**。
+本仓按现行计划 **`ROADMAP.md`** 推进：一条建造序（真流式 → 真 RAG → 评测 / Agent 加厚 / 薄后端），主攻大模型应用岗。
 
 ```
 honoka/
@@ -21,8 +21,8 @@ honoka/
 │   ├── rag.md
 │   ├── agent-playbook.md
 │   ├── finetune-notes.md
-│   ├── job-gap-checklist.md   # 岗位缺口对照
-│   └── career-plan.md         # 角色阶梯 / 学习主线 / 苏州投递 ROI
+│   ├── job-gap-checklist.md   # JD 缺口对照（服从 ROADMAP）
+│   └── career-plan.md         # 已归档，指向 ROADMAP
 ├── fixtures/
 │   └── golden-questions.json
 ├── blog/                 # 阶段复盘写稿 + 掘金/博客园本机发布脚本（.env 勿提交）
@@ -32,8 +32,8 @@ honoka/
 │   ├── templates/
 │   ├── references/
 │   └── out/
-├── AGENTS.md
-├── ROADMAP.md
+├── AGENTS.md             # 协作约定
+├── ROADMAP.md            # 【现行唯一计划】
 ├── STRUCTURE.md
 ├── README.md
 ├── .env.example

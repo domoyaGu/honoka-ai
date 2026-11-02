@@ -1,6 +1,6 @@
 # Agent 用法手册（Honoka）
 
-> `ROADMAP` 主线 3 + 苏州岗位常见问法。本仓可演示：对话切 **Agent** 模式。
+> 服从 `ROADMAP.md`（Agent 作品加厚）。本仓可演示：对话切 **Agent** 模式。
 
 ## 1. 概念（面试 30 秒）
 
