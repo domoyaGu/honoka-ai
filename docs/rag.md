@@ -1,6 +1,6 @@
 # RAG：切片 · 混合检索 · 引用（本仓实现）
 
-> 服从 `ROADMAP.md` 建造序（真 RAG 一步）。当前：关键词 + 本地伪向量混合；真向量见 `docs/job-gap-checklist.md`。
+> 服从 `ROADMAP.md` **第 2 跳**（生产 RAG）。当前：关键词 + 本地伪向量混合；真向量见 `docs/job-gap-checklist.md`。
 
 ## 1. 数据流
 

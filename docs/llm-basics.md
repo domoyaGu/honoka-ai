@@ -1,6 +1,6 @@
 # 大模型应用基础（Honoka）
 
-> 服从 `ROADMAP.md`（真流式 / Prompt）。密钥只进服务端 `.env`，禁止 `VITE_` 暴露。
+> 服从 `ROADMAP.md` **第 2 跳**（真流式 / Prompt）。密钥只进服务端 `.env`，禁止 `VITE_` 暴露。
 
 ## API 形态
 

@@ -1,5 +1,5 @@
 /**
- * 文档库 API（对接 apps/api `/docs`）
+ * 文档库 API（对接 apps/api-java `/docs`）
  */
 import { request } from "@/utils/request";
 

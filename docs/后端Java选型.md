@@ -1,6 +1,6 @@
 # 后端 Java 选型（Honoka）
 
-> 目录：`apps/api-java`（Spring Boot 3）。Node 版 `apps/api` 仍保留，便于对照与回滚。
+> 目录：`apps/api-java`（Spring Boot 3）。本仓**仅保留 Java 后端**（原 Node `apps/api` 已移除）。
 
 ## 为什么选 Spring Boot 3（Web MVC）
 
@@ -46,19 +46,13 @@
 - **缺点**：周边（安全、数据访问、Admin）要自己攒；和「示例型后台」目标不匹配。
 - **适合**：微型工具服务，不是本仓主路径。
 
-### 5. 继续 Node（Express / Fastify）vs 换 Java
+### 5. 为何不保留 Node 对照 API
 
-| | Node `apps/api` | Java `apps/api-java` |
-|--|-----------------|----------------------|
-| 上手（你当前） | 与前端同语言 | 复用 Spring Boot 记忆 |
-| AI 脚本/原型 | 改得快 | 略繁琐，类型更严 |
-| 阶段 B 中台感 | 要自己堆 | Security/JPA/定时更顺 |
-| 部署 | 轻 | 需 JDK 17+ |
-| 本仓策略 | **保留对照** | **新主线后端（推荐）** |
+曾用 Express 作对照，易与 Java 抢 `API_PORT`、双实现漂移。现行计划只维护 `apps/api-java`；前端 Vite 仍代理到同一端口。
 
 ---
 
-## 目录与扩展点（面向阶段 B）
+## 目录与扩展点
 
 ```
 apps/api-java/
@@ -83,19 +77,14 @@ apps/api-java/
 
 ---
 
-## 与 Node 版并存时怎么跑
-
-同一端口 **8788 只能起一个**。前端 Vite 代理仍指向该端口：
+## 怎么跑
 
 ```bash
 # 终端 A：Java（需 JDK 17+ 与 Maven）
 npm run dev:api-java
 
-# 或
-cd apps/api-java && mvn spring-boot:run
-
 # 终端 B：前端
 npm run dev:web
 ```
 
-Node 版：`npm run dev:api`（练习对照时用，勿与 Java 同时占端口）。
+默认端口 **8788**（`API_PORT`）。

@@ -10,19 +10,16 @@
 Honoka 是一个边学边做的 **AI 全栈** 练习仓：
 
 - 前端：`apps/web`（Vue 3 + TypeScript + Element Plus）
-- 后端（推荐）：`apps/api-java`（Spring Boot 3，JDK 17）
-- 后端（对照）：`apps/api`（Node Express）
+- 后端：`apps/api-java`（Spring Boot 3，JDK 17）
 - 数据：`data/samples` 可提交样例；`data/uploads` 运行时上传（gitignore）
 
-阶段 A 目标：文档入库 → 提问 → **流式回答 + 引用片段**。
+目标：文档入库 → 提问 → **流式回答 + 引用片段**（见 `ROADMAP.md` 第 2 跳）。
 
 ---
 
 ## 2. 本地怎么跑
 
-1. 只起一个后端（端口默认 **8788**，Java 与 Node 勿同时占）：
-   - Java：`npm run dev:api-java`
-   - Node：`npm run dev:api`
+1. 后端：`npm run dev:api-java`（端口默认 **8788**）
 2. 前端：`npm run dev:web`（Vite 把 `/api` 代理到 8788）
 3. 浏览器登录后打开「文档库」「AI 对话」
 
