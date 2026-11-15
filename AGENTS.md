@@ -28,6 +28,9 @@
 - 勿把 AI 对话 / RAG 拆成多个微前端子应用。  
 - 微调须授权；无评测不上复杂自治 Agent。  
 - 发文见 `blog/SKILL.md`；Cookie 只放 `blog/.env`。
+- 写/改 `小说/**`：跟 `.cursor/rules/living-prose-novel.mdc` + `living-prose-novel` skill；**落盘前自检**，用户无需每次催。
+- 写/改 `小说/九州英灵，随我收复河山/**`：叠 `九州英灵-设定词` + `.cursor/rules/九州英灵-正文.mdc`（禁废话不禁篇幅、章数不限、单线为主侧线按需、禁对标梗名）。
+- 通读/查逻辑漏洞（剧情·设定·情感·开头结局）：跟 `novel-logic-audit` skill（全书→卷→章三遍，只查不改）；与改文笔 skill 分开。
 
 ## 注释约定
 
