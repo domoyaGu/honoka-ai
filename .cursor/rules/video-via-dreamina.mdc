@@ -1,0 +1,20 @@
+---
+description: 生成视频默认走 Cursor GenerateVideo；即梦仅在用户点名或 Cursor 连续失败时用
+alwaysApply: true
+---
+
+# 视频生成默认走 Cursor
+
+用户约定（2026-11-20 修订）：**凡生成 / 重生成视频，默认使用 Cursor 内置 `GenerateVideo`（本对话视频模型）**。
+
+即梦 `dreamina-canvas` **不要默认使用**（游戏角色 cos 等高还原 IP 成片易触发版权校验 20115）。仅当用户**明确点名即梦**，或 Cursor 视频**连续失败且用户同意改走即梦**时再用。
+
+## 执行要点（Cursor GenerateVideo）
+
+1. 光脚 / 构图 / 动作对齐等硬要求写进 prompt；有定妆与关键帧时用 `image_path` / `last_frame_path` / `keyframes` / `reference_image_paths`。
+2. 成片落到项目约定路径（如 `原神/coser/output/`）。
+3. 若返回 Aborted / 空错误：短间隔重试 1～2 次；仍失败则如实报「中断」，不要默默改走即梦，除非用户同意。
+
+## 即梦例外流程
+
+用户点名即梦时：读 `dreamina-canvas-cli` Skill → 画布 `webUrl` 先发 → 报价后等积分批准再跑。
